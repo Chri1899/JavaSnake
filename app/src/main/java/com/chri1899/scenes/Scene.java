@@ -1,4 +1,4 @@
-package com.chri1899;
+package com.chri1899.scenes;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -11,8 +11,14 @@ public abstract class Scene extends JPanel {
 		setPreferredSize(new Dimension(width, height));
 	}
 
+	public void updateScene() {
+		processInput();
+		update();
+	}
+
 	abstract void update();
 	abstract void render(Graphics g);
+	abstract void processInput();
 
 	@Override
 	public void paintComponent(Graphics g) {

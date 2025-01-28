@@ -1,24 +1,28 @@
 package com.chri1899;
 
-import java.awt.event.KeyEvent;
+import java.awt.Dimension;
 
 import javax.swing.JFrame;
+
+import com.chri1899.scenes.SceneManager;
 
 public class SnakeGame extends JFrame {
 
 	private final int WIDTH = 1080;
 	private final int HEIGHT = 720;
+	private Dimension dim = new Dimension(WIDTH, HEIGHT);
 	private final String TITLE = "SnakeGame";
 
 	private final Keyboard keyboard;
 
 	private boolean running = false;
 
-	private Scene currentScene;
+	private SceneManager sceneManager;
 
 	public SnakeGame() {
 		setSize(WIDTH, HEIGHT);
 		setTitle(TITLE);
+		setResizable(false);
 
 		keyboard = Keyboard.getInstance();
 		addKeyListener(keyboard);
@@ -28,8 +32,8 @@ public class SnakeGame extends JFrame {
 	}
 
 	public void start() {
-		currentScene = new GameScene(WIDTH, HEIGHT);
-		add(currentScene);
+		sceneManager = new SceneManager(this);
+		add(sceneManager.getCurrentScene());
 		pack();
 		setVisible(true);
 		running = true;
@@ -50,26 +54,32 @@ public class SnakeGame extends JFrame {
 			while (running) {
 				long currentTime = System.currentTimeMillis();
 
-				if (Keyboard.isKeyPressed(KeyEvent.VK_ESCAPE) && !(currentScene instanceof GameScene)) {
-					currentScene = new GameScene(WIDTH, HEIGHT);
+				if (sceneManager.hasSceneChanged()) {
+					getContentPane().removeAll();
+					add(sceneManager.getCurrentScene());
 
-					GameScene scene = (GameScene) currentScene;
-					scene.start();
+					revalidate();
+					repaint();
 				}
 
 				// Update game logic at a fixed rate
 				if (currentTime - lastUpdateTime >= UPDATE_TIME) {
-					currentScene.update();
+					sceneManager.getCurrentScene().updateScene();
+
 					lastUpdateTime = currentTime;
 				}
 
 				// render as often as possible
 				if (currentTime - lastFrameTime >= FRAME_TIME) {
-					currentScene.repaint();
+					sceneManager.getCurrentScene().repaint();
 					lastFrameTime = currentTime;
 				}
 
 				pack();
+
+				if (sceneManager.shouldStop()) {
+					running = false;
+				}
 
 				try {
 					Thread.sleep(1);
@@ -82,10 +92,13 @@ public class SnakeGame extends JFrame {
 		});
 
 		gameThread.start();
-
 	}
 
 	private void stop() {
 		System.exit(0);
+	}
+
+	public Dimension getDimension() {
+		return dim;
 	}
 }

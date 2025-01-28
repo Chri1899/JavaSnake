@@ -28,25 +28,6 @@ public class Snake {
 	}
 
 	public void update() {
-		// Movement
-		if (Keyboard.isKeyPressed(KeyEvent.VK_W)) {
-			if (curDir != Direction.DOWN) {
-				curDir = Direction.UP;
-			}
-		} else if (Keyboard.isKeyPressed(KeyEvent.VK_S)) {
-			if (curDir != Direction.UP) {
-				curDir = Direction.DOWN;
-			}
-		} else if (Keyboard.isKeyPressed(KeyEvent.VK_A)) {
-			if (curDir != Direction.RIGHT) {
-				curDir = Direction.LEFT;
-			}
-		} else if (Keyboard.isKeyPressed(KeyEvent.VK_D)) {
-			if (curDir != Direction.LEFT) {
-				curDir = Direction.RIGHT;
-			}
-		}
-
 		// Check collision with wall
 		if (checkWallCollision()) {
 			die();
@@ -55,6 +36,25 @@ public class Snake {
 
 		// Move
 		move();
+	}
+
+	public void processMovement(int keyCode) {
+		if (isAlive) {
+			switch (keyCode) {
+				case KeyEvent.VK_W:
+					if (curDir != Direction.DOWN) curDir = Direction.UP; 
+					break;
+				case KeyEvent.VK_S:
+					if (curDir != Direction.UP) curDir = Direction.DOWN;
+					break;
+				case KeyEvent.VK_A:
+					if (curDir != Direction.RIGHT) curDir = Direction.LEFT;
+					break;
+				case KeyEvent.VK_D:
+					if (curDir != Direction.LEFT) curDir = Direction.RIGHT;
+					break;
+			}
+		}
 	}
 
 	private void move() {
@@ -87,9 +87,10 @@ public class Snake {
 		isAlive = false;
 	}
 
-	public boolean getIsAlive() {
-		return isAlive;
+	public boolean isDead() {
+		return !isAlive;
 	}
+	
 
 	public void render(Graphics g, int tileSize) {
 		for (SnakePart p : body) {
