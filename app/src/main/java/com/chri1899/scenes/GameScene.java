@@ -16,28 +16,31 @@ public class GameScene extends Scene {
 	private Snake snake;
 
 	private boolean paused = false;
+	private boolean started = false;
 
 	public GameScene(SceneManager manager) {
 		super(manager.getWidth(), manager.getHeight());
 		this.manager = manager;
 
-		start();
+		snake = new Snake(manager.getWidth()/tileSize, manager.getHeight()/tileSize);
 	}
 
-	public void start() {
-		snake = new Snake(manager.getWidth()/tileSize, manager.getHeight()/tileSize);
+	private void start() {
+		started = true;
 	}
 
 	// TODO Food
 	@Override
 	void update() {
-		if (!paused) {
-			if (snake.isDead()) {
-				manager.processAction(Action.DIED);
-				return;
-			}
+		if (started) {
+			if (!paused) {
+				if (snake.isDead()) {
+					manager.processAction(Action.DIED);
+					return;
+				}
 
-			snake.update();
+				snake.update();
+			}
 		}
 	}
 
@@ -66,6 +69,8 @@ public class GameScene extends Scene {
 			snake.processMovement(KeyEvent.VK_A);
 		} else if (Keyboard.isKeyPressed(KeyEvent.VK_D)) {
 			snake.processMovement(KeyEvent.VK_D);
+		} else if (Keyboard.isKeyPressed(KeyEvent.VK_ENTER)) {
+			start();
 		}
 	}
 }
