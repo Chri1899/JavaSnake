@@ -36,6 +36,17 @@ public class Snake {
 
 		// Move
 		move();
+		for (SnakePart p : body) {
+		}
+
+		// Check Self Collision after moving
+		if (checkSelfCollision()) {
+			die();
+		}
+	}
+
+	public void grow() {
+		body.add(new SnakePart(PartType.BODY, body.getLast().getLastX(), body.getLast().getLastY()));
 	}
 
 	public void processMovement(int keyCode) {
@@ -58,9 +69,37 @@ public class Snake {
 	}
 
 	private void move() {
+		SnakePart lastPart = null;
+
 		for (SnakePart p : body) {
-			p.move(curDir);
+			if (p.getType() == PartType.HEAD) {
+				p.move(curDir);
+			} else {
+				p.move(lastPart.getLastX(), lastPart.getLastY());
+			}
+
+			lastPart = p;
 		}
+	}
+
+	public boolean doesBlock(int foodX, int foodY) {
+		for (SnakePart part : body) {
+			if ((part.getX() == foodX) && (part.getY() == foodY)) return true;
+		}
+
+		return false;
+	}
+
+	public boolean checkFoodCollision(int foodX, int foodY) {
+		SnakePart head = body.get(0);
+		int headX = head.getX();
+		int headY = head.getY();
+
+		if (headX == foodX && headY == foodY) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private boolean checkWallCollision() {
@@ -70,6 +109,20 @@ public class Snake {
 
 		if (headX < 0 || headX > boundX || headY < 0 || headY > boundY) {
 			return true;
+		}
+
+		return false;
+	}
+
+	private boolean checkSelfCollision() {
+		SnakePart head = body.get(0);
+		int headX = head.getX();
+		int headY = head.getY();
+
+		for (int i = 1; i < body.size(); i++) {
+			if ((body.get(i).getX() == headX) && (body.get(i).getY() == headY)) {
+				return true;
+			}
 		}
 
 		return false;

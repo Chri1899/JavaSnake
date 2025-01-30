@@ -65,8 +65,12 @@ public class SnakeGame extends JFrame {
 				// Update game logic at a fixed rate
 				if (currentTime - lastUpdateTime >= UPDATE_TIME) {
 					sceneManager.getCurrentScene().updateScene();
-
 					lastUpdateTime = currentTime;
+				}
+
+				if (sceneManager.shouldStop()) {
+					running = false;
+					break;
 				}
 
 				// render as often as possible
@@ -76,10 +80,6 @@ public class SnakeGame extends JFrame {
 				}
 
 				pack();
-
-				if (sceneManager.shouldStop()) {
-					running = false;
-				}
 
 				try {
 					Thread.sleep(1);

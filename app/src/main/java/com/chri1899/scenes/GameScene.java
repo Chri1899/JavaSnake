@@ -3,6 +3,7 @@ package com.chri1899.scenes;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.util.Random;
 
 import com.chri1899.Keyboard;
 import com.chri1899.Snake;
@@ -14,6 +15,10 @@ public class GameScene extends Scene {
 	private final int tileSize = 20;
 
 	private Snake snake;
+	private int[] foodCoords = new int[2];
+
+	private final int cols;
+	private final int rows;
 
 	private boolean paused = false;
 	private boolean started = false;
@@ -22,14 +27,31 @@ public class GameScene extends Scene {
 		super(manager.getWidth(), manager.getHeight());
 		this.manager = manager;
 
-		snake = new Snake(manager.getWidth()/tileSize, manager.getHeight()/tileSize);
+		cols = manager.getWidth()/tileSize;
+		rows = manager.getHeight()/tileSize;
+
+		snake = new Snake (cols, rows);
+		spawnFood();
 	}
 
 	private void start() {
 		started = true;
 	}
 
-	// TODO Food
+	private void spawnFood() {
+		Random rand = new Random();
+		int foodX;
+		int foodY;
+		
+		do {
+			foodX = rand.nextInt(cols);
+			foodY = rand.nextInt(rows);	
+		} while ((snake.doesBlock(foodX, foodY)));
+
+		foodCoords[0] = foodX;
+		foodCoords[1] = foodY;
+	}
+
 	@Override
 	void update() {
 		if (started) {
@@ -40,6 +62,11 @@ public class GameScene extends Scene {
 				}
 
 				snake.update();
+
+				if (snake.checkFoodCollision(foodCoords[0], foodCoords[1])) {
+					snake.grow();
+					spawnFood();
+				}
 			}
 		}
 	}
@@ -48,8 +75,26 @@ public class GameScene extends Scene {
 	void render(Graphics g) {
 		setBackground(Color.BLACK);
 
+		/* Test Rendering
+		
+		g.setColor(Color.BLACK);
+		for (int i = 0; i < rows; i++) {
+			g.drawLine(0, i * tileSize, manager.getWidth(), i * tileSize);
+		}
+
+		for (int i = 0; i < cols; i++) {
+			g.drawLine(i * tileSize, 0, i* tileSize, manager.getHeight());
+		}
+
+		*/
+		
+
 		// Render Snake
 		snake.render(g, tileSize);
+
+		// Render food
+		g.setColor(Color.GREEN);
+		g.fillRect(foodCoords[0] * tileSize, foodCoords[1] * tileSize, tileSize, tileSize);
 
 		// TODO Paused Rendering
 		if (paused) {

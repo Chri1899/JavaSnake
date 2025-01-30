@@ -9,6 +9,9 @@ public class SnakePart {
 	private int x;
 	private int y;
 
+	private int lastX;
+	private int lastY;
+
 	private Direction lastDir;
 
 	public SnakePart(PartType type, int x, int y) {
@@ -18,6 +21,9 @@ public class SnakePart {
 	}
 
 	public void move(Direction dir) {
+		lastX = x;
+		lastY = y;
+
 		switch (dir) {
 			case UP:
 				if (lastDir != Direction.DOWN) {
@@ -44,12 +50,28 @@ public class SnakePart {
 		}
 	}
 
+	public void move(int xCoord, int yCoord) {
+		lastX = x;
+		lastY = y;
+
+		x = xCoord;
+		y = yCoord;
+	}
+
 	public int getX() {
 		return x;
 	}
 
 	public int getY() {
 		return y;
+	}
+
+	public int getLastX() {
+		return lastX;
+	}
+
+	public int getLastY() {
+		return lastY;
 	}
 
 	public PartType getType() {
